@@ -198,7 +198,31 @@ public class ListeChaineExpress< E > {
      * taille - 1 de la liste.
      */
     public E get( int index ) {
-        return null;
+        E elementRetire = null;
+
+        if(index < 0 || index >= taille) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Chainon chainonCourant = debut;
+
+        int chainonCible = index / capaciteMaxParChainon;
+        int chainonIndex = index % capaciteMaxParChainon;
+
+        for(int i = 0; i < chainonCible; i++){
+            chainonCourant = chainonCourant.suivant;
+        }
+
+
+        for (int i = 0; i <= chainonCourant.nbCaseUtilisees - 1  ; i++) {
+            if (i == chainonIndex) {
+                elementRetire = chainonCourant.elements[i];
+            }
+        }
+
+        return elementRetire;
+
+
     }
 
     /**
