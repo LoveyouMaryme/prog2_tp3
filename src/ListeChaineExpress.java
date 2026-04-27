@@ -309,6 +309,27 @@ public class ListeChaineExpress< E > {
      * donne {@code null}.
      */
     public void replaceAll( UnaryOperator< E > operator ) {
+
+        if(operator == null){
+            throw new NullPointerException();
+        }
+
+        Chainon chainonCourant = debut;
+
+        while (chainonCourant != null) {
+            for (int i = 0; i < chainonCourant.nbCaseUtilisees; i++) {
+                chainonCourant.elements[i] = operator.apply(chainonCourant.elements[i]);
+
+                if(chainonCourant.elements[i] == null){
+                    throw new NullPointerException();
+                }
+
+            }
+
+                chainonCourant = chainonCourant.suivant;
+
+        }
+
     }
 
 
