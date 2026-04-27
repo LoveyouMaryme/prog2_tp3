@@ -236,8 +236,31 @@ public class ListeChaineExpress< E > {
      * @throws NullPointerException si l'élément est {@code null}.
      */
     public E set( int index, E element ) {
-        return null;
-    }
+        E elementRetire = null;
+
+        if(index < 0 || index >= taille ) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Chainon chainonCourant = debut;
+
+        int chainonCible = index / capaciteMaxParChainon;
+        int chainonIndex = index % capaciteMaxParChainon;
+
+        for(int i = 0; i < chainonCible; i++){
+            chainonCourant = chainonCourant.suivant;
+        }
+
+
+        for (int i = 0; i <= chainonCourant.nbCaseUtilisees - 1  ; i++) {
+            if (i == chainonIndex) {
+                elementRetire = chainonCourant.elements[i];
+                chainonCourant.elements[i] = element;
+            }
+        }
+        return elementRetire;
+        }
+
 
     /**
      * Retourne l'index de la première occurrence dans la liste de l'élément indiqué.
