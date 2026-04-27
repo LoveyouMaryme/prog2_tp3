@@ -81,26 +81,29 @@ public class ListeChaineExpress< E > {
             debut = new Chainon();
             fin = debut;
         }
+
         Chainon chainonCourant = debut;
 
-        int chainonÀInsérer = index / capaciteMaxParChainon;
+        int chainonAffecte = index / capaciteMaxParChainon;
         int chainonIndex = index % capaciteMaxParChainon;
 
-        if(chainonCourant.nbCaseUtilisees >= capaciteMaxParChainon) {
+        while(chainonAffecte > 0) {
+            if(chainonCourant.suivant == null) {
+                Chainon nouveauChainon = new Chainon();
+                chainonCourant.suivant = nouveauChainon;
+                nouveauChainon.precedant = chainonCourant;
+                fin = nouveauChainon;
+            }
+            chainonCourant = chainonCourant.suivant;
+            chainonAffecte--;
+        }
+
+        if(chainonCourant.nbCaseUtilisees >= capaciteMaxParChainon && chainonCourant.suivant == null) {
             Chainon nouveauChainon = new Chainon();
-            Chainon temp = chainonCourant.suivant;
             chainonCourant.suivant = nouveauChainon;
             nouveauChainon.precedant = chainonCourant;
-            nouveauChainon.suivant = temp;
-            fin = nouveauChainon.suivant;
+            fin = nouveauChainon;
         }
-
-        for(int i = 0; i < chainonÀInsérer; i++){
-            chainonCourant = chainonCourant.suivant;
-        }
-
-
-
 
 
 
@@ -118,11 +121,7 @@ public class ListeChaineExpress< E > {
         if(chainonCourant.nbCaseUtilisees != capaciteMaxParChainon ){
             chainonCourant.nbCaseUtilisees++;
         }
-
-
-
         taille++;
-
 
     }
 
@@ -137,7 +136,58 @@ public class ListeChaineExpress< E > {
      * taille - 1 de la liste.
      */
     public E remove( int index ) {
-        return null;
+        E elementRetire = null;
+
+        if(index < 0 || index > taille) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Chainon chainonCourant = debut;
+
+        int chainonCible = index / capaciteMaxParChainon;
+        int chainonIndex = index % capaciteMaxParChainon;
+
+        for(int i = 0; i < chainonCible; i++){
+            chainonCourant = chainonCourant.suivant;
+        }
+
+        E [] nouvelleListe = (E[]) new Object[chainonCourant.nbCaseUtilisees -1];
+
+
+        for (int i = 0; i <= chainonCourant.nbCaseUtilisees - 1  ; i++){
+            if(i == chainonIndex){
+                elementRetire = chainonCourant.elements[i];
+            } else {
+                if(i > chainonIndex){
+                    nouvelleListe[i - 1] = chainonCourant.elements[i];
+                }else{
+                    nouvelleListe[i] = chainonCourant.elements[i];
+                }
+            }
+        }
+
+        chainonCourant.elements = nouvelleListe;
+
+        chainonCourant.nbCaseUtilisees--;
+
+        taille--;
+
+        if(taille == 0){
+            debut = null;
+            fin = null;
+        } else if (chainonCourant.nbCaseUtilisees == 0){
+            if(chainonCourant == fin) {
+                fin = chainonCourant.precedant;
+                fin.suivant = null;
+            } else if(chainonCourant == debut) {
+                debut = chainonCourant.suivant;
+                debut.precedant = null;
+            } else{
+                chainonCourant.precedant.suivant = chainonCourant.suivant;
+                chainonCourant.suivant.precedant = chainonCourant.precedant;
+            }
+        }
+        return elementRetire;
     }
 
     /**
