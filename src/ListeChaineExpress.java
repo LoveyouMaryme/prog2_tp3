@@ -271,7 +271,34 @@ public class ListeChaineExpress< E > {
      * @throws NullPointerException si l'élément cible est {@code null}.
      */
     public int indexOf( Object target ) {
-        return 0;
+
+        if(target == null){
+            throw new NullPointerException();
+        }
+
+        int trouve = -1;
+        int nombreChainon = 0;
+        Chainon chainonCourant = debut;
+
+        while (chainonCourant != null && trouve == -1) {
+            for (int i = 0; i < chainonCourant.nbCaseUtilisees && trouve == -1; i++) {
+                if (chainonCourant.elements[i].equals(target)) {
+                    trouve = i;
+                }
+            }
+
+            if (trouve == -1) {
+                nombreChainon++;
+                chainonCourant = chainonCourant.suivant;
+            }
+        }
+
+        if (trouve == -1) {
+            return -1;
+        }
+
+        trouve = (nombreChainon * capaciteMaxParChainon) + trouve;
+        return trouve;
     }
 
     /**
