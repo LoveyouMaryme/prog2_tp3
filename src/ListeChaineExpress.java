@@ -246,6 +246,10 @@ public class ListeChaineExpress< E > {
             throw new IndexOutOfBoundsException();
         }
 
+        if (element == null){
+            throw new NullPointerException();
+        }
+
         Chainon chainonCourant = debut;
 
         int chainonCible = index / capaciteMaxParChainon;
