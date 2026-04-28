@@ -56,13 +56,12 @@ public class ListeChaineExpress< E > {
         this.capaciteMaxParChainon = nbElementMaxParChainon;
     }
 
-    // ***********************************
-    // Méthodes à compléter
-
     /**
-     * Insere l'élément à la position donnée.
-     * Les éléments déjà présents à la position indiquée et les suivants seront décalé de
-     * 1 vers la droite (1 est ajouté à leurs positions).
+     * Insère l'élément à la position donnée.
+     * Décale les éléments présents à partir de cet index (et les suivants)
+     * d'une position vers la droite. Si un chaînon est plein lors de
+     * l'insertion, un nouveau chaînon est créé pour recevoir l'élément qui
+     * déborde.
      * @param index l'index où l'élément sera inséré.
      * @param element l'élément inséré.
      * @throws IndexOutOfBoundsException si l'index est plus petit que 0 ou plus grand que la
@@ -83,46 +82,51 @@ public class ListeChaineExpress< E > {
         }
 
         Chainon chainonCourant = debut;
-
-        int chainonAffecte = index / capaciteMaxParChainon;
-        int chainonIndex = index % capaciteMaxParChainon;
-
-        while(chainonAffecte > 0) {
-            if(chainonCourant.suivant == null) {
-                Chainon nouveauChainon = new Chainon();
-                chainonCourant.suivant = nouveauChainon;
-                nouveauChainon.precedant = chainonCourant;
-                fin = nouveauChainon;
-            }
+        int indexDansChainon = index;
+        while(indexDansChainon > chainonCourant.nbCaseUtilisees) {
+            indexDansChainon -= chainonCourant.nbCaseUtilisees;
             chainonCourant = chainonCourant.suivant;
-            chainonAffecte--;
         }
 
-        if(chainonCourant.nbCaseUtilisees >= capaciteMaxParChainon && chainonCourant.suivant == null) {
-            Chainon nouveauChainon = new Chainon();
-            chainonCourant.suivant = nouveauChainon;
-            nouveauChainon.precedant = chainonCourant;
-            fin = nouveauChainon;
-        }
-
-
-
-
-        if(chainonCourant.elements[ chainonIndex ] == null) {
-            chainonCourant.elements[ chainonIndex ] = element;
+        if (indexDansChainon == chainonCourant.nbCaseUtilisees) {
+            if (chainonCourant.nbCaseUtilisees < capaciteMaxParChainon) {
+                chainonCourant.elements[ indexDansChainon ] = element;
+                chainonCourant.nbCaseUtilisees++;
+            } else {
+                insererNouveauChainon(chainonCourant, element );
+            }
         } else {
-            if(chainonCourant.nbCaseUtilisees >= capaciteMaxParChainon ) {
-                chainonCourant.suivant.elements[0] = chainonCourant.elements[capaciteMaxParChainon - 1];
-                chainonCourant.suivant.nbCaseUtilisees++;
+            if (chainonCourant.nbCaseUtilisees < capaciteMaxParChainon) {
+                for (int i = chainonCourant.nbCaseUtilisees; i > indexDansChainon; i-- ) {
+                    chainonCourant.elements[ i ] = chainonCourant.elements[ i - 1 ];
+                }
+                chainonCourant.elements[ indexDansChainon ] = element;
+                chainonCourant.nbCaseUtilisees++;
+            } else {
+                E deborde = chainonCourant.elements[ capaciteMaxParChainon - 1 ];
+                for ( int i = capaciteMaxParChainon - 1; i > indexDansChainon; i-- ) {
+                    chainonCourant.elements[ i ] = chainonCourant.elements[ i - 1 ];
+                }
+                chainonCourant.elements[ indexDansChainon ] = element;
+                insererNouveauChainon(chainonCourant, deborde );
             }
-            chainonCourant.elements[chainonIndex + 1] =  chainonCourant.elements[chainonIndex];
-            chainonCourant.elements[chainonIndex] = element;
-            }
-        if(chainonCourant.nbCaseUtilisees != capaciteMaxParChainon ){
-            chainonCourant.nbCaseUtilisees++;
         }
         taille++;
+    }
 
+
+    private void insererNouveauChainon(Chainon precedent, E element) {
+        Chainon nouveau = new Chainon();
+        nouveau.elements[0] = element;
+        nouveau.nbCaseUtilisees = 1;
+        nouveau.precedant = precedent;
+        nouveau.suivant = precedent.suivant;
+        if (precedent.suivant != null) {
+            precedent.suivant.precedant = nouveau;
+        } else {
+            fin = nouveau;
+        }
+        precedent.suivant = nouveau;
     }
 
     /**
