@@ -1,4 +1,7 @@
-
+/* ListeChaineExpress.java - Création d'une liste chaînée rapide
+ * Auteur :  Love-Mary Victor, Sami Lies Mouzai
+ * Code permanent :  VICL12599701, MOUS27039501
+ */
 import java.util.function.UnaryOperator;
 
 /**
